@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/foresightJ/tinyapp/issues"
   },
-  "homepage": "https://github.com/foresightJ/tinyapp#readme"
+  "homepage": "https://github.com/foresightJ/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
