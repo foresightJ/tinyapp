@@ -42,29 +42,14 @@ app.post("/urls", (req, res) => {
 
 // route paramater to display requested data by key in database
 
-app.get("/urls/:id", (req, res) => {
-  // console.log(req.params); /** --> { shortURL: 'gddd' } */
-  const id = req.params.id;
-  let longUrl;
-  if (id) {
-    longUrl = urlDatabase[id];
-  } else {
-    res.send("no Id");
-  }
-
-  // if (!urlDatabase[shortURL]) {
-  //   res.send("sorry url does not exist");
-  //   return;
-  // }
+app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    // shortURL: req.params.shortURL,
-    shortURL: id,
-    longURL: longUrl,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    /* What goes here? */
   };
-  // console.log(templateVars);
   res.render("urls_show", templateVars);
 });
-
 // app.get("/u/:shortURL", (req, res) => {
 //   // const longURL = ...
 //   res.redirect(longURL);
