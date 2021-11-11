@@ -43,12 +43,14 @@ app.post("/urls", (req, res) => {
   // const {shortURL, longURL} = urlDatabase;
   urlDatabase[shortURL] = longURL;
   // console.log(urlDatabase);
-  res.redirect("/urls");
+  res.redirect(`/urls/${shortURL}`);
+  // res.redirect("/urls/:shortURL");
 });
 
 // route paramater to display requested data by key in database
 
 app.get("/urls/:shortURL", (req, res) => {
+  // console.log(req);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
@@ -59,8 +61,12 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  // const longURL = ...
-  res.redirect(longURL);
+  // const longURL = req.params.shortURL...
+  const longURL = req.params.shortURL;
+  res.redirect(`/urls/${longURL}`);
+  // console.log(req.body);
+
+  // res.redirect(`/urls/${req.body}`);
 });
 
 app.listen(PORT, () => {
