@@ -9,7 +9,8 @@ app.set("view engine", "ejs");
 // Generate a random string
 
 function generateRandomString() {
-  return `${Math.random().toString(36).slice(2)}`;
+  // console.log(Math.random().toString(36).slice(2, 8));
+  return `${Math.random().toString(36).slice(2, 8)}`;
 }
 
 // Reference database with our longURLs
@@ -36,8 +37,13 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok");
+  const { longURL } = req.body;
+  const shortURL = generateRandomString();
   // res.render("urls_new");
+  // const {shortURL, longURL} = urlDatabase;
+  urlDatabase[shortURL] = longURL;
+  // console.log(urlDatabase);
+  res.redirect("/urls");
 });
 
 // route paramater to display requested data by key in database
@@ -48,12 +54,14 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     /* What goes here? */
   };
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
-// app.get("/u/:shortURL", (req, res) => {
-//   // const longURL = ...
-//   res.redirect(longURL);
-// });
+
+app.get("/u/:shortURL", (req, res) => {
+  // const longURL = ...
+  res.redirect(longURL);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
