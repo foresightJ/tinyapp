@@ -36,7 +36,7 @@ app.get("/urls/new", (req, res) => {
 // response message to display to client after update
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  // console.log(req.body); // Log the POST request body to the console
   const { longURL } = req.body;
   const shortURL = generateRandomString();
   // res.render("urls_new");
@@ -67,6 +67,14 @@ app.get("/u/:shortURL", (req, res) => {
   // console.log(req.body);
 
   // res.redirect(`/urls/${req.body}`);
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  // console.log(req.params.shortURL);
+  const shortURL = req.params.shortURL;
+  // delete urlDatabase[req.params.shortURL];
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
