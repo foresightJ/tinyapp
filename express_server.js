@@ -63,6 +63,7 @@ app.get("/urls/:shortURL", (req, res) => {
 //   // res.redirect(`/urls/${req.body}`);
 // });
 
+// A redirect to the corresponding longURL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   // const longURL = ...
@@ -77,6 +78,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
+
+app.get("urls/:shortURL/edit", (req, res) => {
+  // const shortURL = req.params.shortURL;
+
+
+  res.render("urls_show")
+})
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
