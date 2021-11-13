@@ -110,9 +110,18 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 // });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   // res.cookie("username", `${req.body.username}`);
   res.cookie("username", `${req.body.username}`);
+  res.redirect("/urls");
+
+  // console.log("cookie:", res.cookie.username);
+});
+
+app.post("/logout", (req, res) => {
+  // console.log(req.body);
+  // res.cookie("username", `${req.body.username}`);
+  res.clearCookie("username");
   res.redirect("/urls");
 
   // console.log("cookie:", res.cookie.username);
