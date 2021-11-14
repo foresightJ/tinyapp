@@ -33,6 +33,15 @@ const users = {
   },
 };
 
+// helper function to check if email already exits in urlDatabase;
+const checkEmail = (email) => {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return `${true}`;
+    }
+  }
+};
+
 // displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
@@ -135,16 +144,23 @@ app.post("/register", (req, res) => {
   const user_id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  const user = {
-    id: user_id,
-    email: email,
-    password: password,
-  };
+  // checks registration requirements
+  if (email === "" || password === "" || checkEmail(email)) {
+    res.sendStatus(403);
+  } else {
+    const user = {
+      id: user_id,
+      email: email,
+      password: password,
+    };
+    users[user_id] = user;
+    res.cookie("user_id", `${user.id}`);
+    console.log("cookie:", `${user.id}`);
+  }
 
+  console.log("users:", users);
   // adds newUser to database
-  users[user_id] = user;
   // sets cookie on user_id
-  res.cookie("user_id", `${user.id}`);
   // console.log("user", user);
   // console.log("user.id", user.id);
   // console.log("users:", users);
