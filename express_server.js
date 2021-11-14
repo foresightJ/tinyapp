@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(cookieParser());
 
-// Generate a random string
+// generates a random user_id
 function generateRandomString() {
   return `${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -19,6 +19,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+// Our users database Object
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -32,7 +33,7 @@ const users = {
   },
 };
 
-// urls endpoint/route to display our database
+// displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = { urls: urlDatabase, user: users[userId] };
@@ -40,7 +41,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// client route request to create new entry in database
+// displays form page to update urlDatabase
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {
@@ -49,24 +50,19 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// server updates database with new entry from form and redirects to newly created URL
-
+// create and updates urlDatabase with new url then redirects to urls list page
 app.post("/urls", (req, res) => {
+  // form data
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
-  // const templateVars = {
-  //   longURL: longURL,
-  //   shortURL: shortURL
-  // };
-
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+
   // res.redirect("/urls");
+  res.redirect(`/urls/${shortURL}`);
 });
 
-// route paramater to display requested data by key in database
-
+// displays specified url from urlDatabase
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {
@@ -78,18 +74,8 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// A redirect to the querried
-// app.get("/u/:shortURL", (req, res) => {
-//   // const longURL = req.params.shortURL...
-//   const shortURL = req.params.shortURL;
-//   const longURL = urlDatabase[shortURL]
-//   res.redirect(`/urls/${longURL}`);
-//   // console.log(req.body);
-
-//   // res.redirect(`/urls/${req.body}`);
-// });
-
-// A redirect to the corresponding longURL
+// A redirect to the corresponding longURL OR
+// keyed short url re-directs to the web address contained in its value
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   // const longURL = ...
@@ -97,14 +83,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// deletes specifiesd entry from urlDatabase and redirects to urls page
 app.post("/urls/:shortURL/delete", (req, res) => {
-  // console.log(req.params.shortURL);
   const shortURL = req.params.shortURL;
-  // delete urlDatabase[req.params.shortURL];
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
 
+// displays form to update a specified data(url) in urlDatabase
 app.get("urls/:shortURL/edit", (req, res) => {
   // const shortURL = req.params.shortURL;
   const userId = req.cookies["user_id"];
@@ -115,9 +101,9 @@ app.get("urls/:shortURL/edit", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// updates urlDatabse with new value for its key(shortURL)
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
-  // console.log(req.body.editlongURL);
   urlDatabase[shortURL] = req.body.editlongURL;
 
   res.redirect("/urls");
@@ -127,53 +113,43 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //   res.render("_header");
 // });
 
+// update maybe needed on login POST route
 app.post("/login", (req, res) => {
-  // console.log(req.body);
-  // res.cookie("username", `${req.body.username}`);
-  // res.cookie("username", `${req.body.username}`);
   res.redirect("/urls");
-
-  // console.log("cookie:", res.cookie.username);
 });
 
+// logs out registered user
 app.post("/logout", (req, res) => {
-  // console.log(req.body);
-  // res.cookie("username", `${req.body.username}`);
   res.clearCookie("user_id");
   res.redirect("/urls");
-
-  // console.log("cookie:", res.cookie.username);
 });
 
+// registration form
 app.get("/register", (req, res) => {
   res.render("register-user");
 });
 
+// Updates users database with a newUserr and sets cookies with user_id and return to urldatabase page
 app.post("/register", (req, res) => {
+  // defines register-route  variables
   const user_id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-
-  // const user = {
-  //   id: user_id,
-  //   email: email,
-  //   password: password,
-  // };
-
   const user = {
     id: user_id,
     email: email,
     password: password,
   };
 
+  // adds newUser to database
   users[user_id] = user;
+  // sets cookie on user_id
   res.cookie("user_id", `${user.id}`);
-  console.log("user", user);
-  console.log("user.id", user.id);
-  console.log("user:", user);
-  console.log("users:", users);
-  console.log("cookie:", `${user.id}`);
-  console.log(req.body);
+  // console.log("user", user);
+  // console.log("user.id", user.id);
+  // console.log("users:", users);
+  // console.log("cookie:", `${user.id}`);
+  // console.log(req.body);
   // console.log(req.body.password);
   // console.log(req.body.email);
 
