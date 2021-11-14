@@ -34,15 +34,17 @@ const users = {
 
 // urls endpoint/route to display our database
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: req.cookies["user_id"] };
+  const userId = req.cookies["user_id"];
+  const templateVars = { urls: urlDatabase, user: users[userId] };
+  console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
 // client route request to create new entry in database
 app.get("/urls/new", (req, res) => {
-  const user = req.cookies["user_id"];
+  const userId = req.cookies["user_id"];
   const templateVars = {
-    user: user,
+    user: users[userId],
   };
   res.render("urls_new", templateVars);
 });
@@ -66,11 +68,11 @@ app.post("/urls", (req, res) => {
 // route paramater to display requested data by key in database
 
 app.get("/urls/:shortURL", (req, res) => {
-  const user = req.cookies["user_id"];
+  const userId = req.cookies["user_id"];
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    user: user,
+    user: users[userId],
     // edit: false
   };
   res.render("urls_show", templateVars);
@@ -105,9 +107,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.get("urls/:shortURL/edit", (req, res) => {
   // const shortURL = req.params.shortURL;
-  const user = req.cookies["user_id"];
+  const userId = req.cookies["user_id"];
   const templateVars = {
-    user: user,
+    user: users[userId],
   };
 
   res.render("urls_show", templateVars);
@@ -137,7 +139,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   // console.log(req.body);
   // res.cookie("username", `${req.body.username}`);
-  // res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 
   // console.log("cookie:", res.cookie.username);
