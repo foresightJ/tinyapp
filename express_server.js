@@ -42,6 +42,14 @@ const checkEmail = (email) => {
   }
 };
 
+// helper function to return user object if it exist;
+const findUserEmail = (email) => {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user];
+    }
+  }
+};
 // displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
@@ -123,8 +131,33 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 // });
 
 // update maybe needed on login POST route
+// app.post("/login", (req, res) => {
+//   res.redirect("/urls");
+// });
+
+app.get("/login", (req, res) => {
+  res.render("login_page");
+});
+
 app.post("/login", (req, res) => {
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!checkEmail(email)) {
+    res.sendStatus(403);
+  } else {
+    //if it exist get the user and set cookies to the user id
+    const user = findUserEmail(email);
+    // console.log(user);
+
+    if (password === user.password) {
+      res.cookie("user_id", `${user.id}`);
+      res.redirect("/urls");
+    } else {
+      res.sendStatus(402);
+    }
+    //redirect the user to the homepage
+  }
+  // console.log(users);
 });
 
 // logs out registered user
@@ -153,9 +186,10 @@ app.post("/register", (req, res) => {
       email: email,
       password: password,
     };
+    // Defines User
     users[user_id] = user;
     res.cookie("user_id", `${user.id}`);
-    console.log("cookie:", `${user.id}`);
+    // console.log("cookie:", `${user.id}`);
   }
 
   console.log("users:", users);
