@@ -50,6 +50,15 @@ const findUserEmail = (email) => {
     }
   }
 };
+
+// helper function to get user object by id;
+const getUserByid = (id) => {
+  for (let user in users) {
+    if (users[user].id === id) {
+      return users[user];
+    }
+  }
+};
 // displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
@@ -60,11 +69,17 @@ app.get("/urls", (req, res) => {
 
 // displays form page to update urlDatabase
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const templateVars = {
-    user: users[userId],
-  };
-  res.render("urls_new", templateVars);
+  // user = null
+  const user_id = req.cookies["user_id"];
+  if (user_id) {
+    const user = getUserByid(user_id);
+    const templateVars = {
+      user: user,
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // create and updates urlDatabase with new url then redirects to urls list page
