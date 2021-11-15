@@ -70,16 +70,26 @@ app.get("/urls", (req, res) => {
 // displays form page to update urlDatabase
 app.get("/urls/new", (req, res) => {
   // user = null
-  const user_id = req.cookies["user_id"];
-  if (user_id) {
-    const user = getUserByid(user_id);
+  if (!getUserByid(req.cookies["user_id"])) {
+    res.redirect("/login");
+  } else {
+    const user = getUserByid(req.cookies["user_id"]);
     const templateVars = {
       user: user,
     };
     res.render("urls_new", templateVars);
-  } else {
-    res.redirect("/login");
   }
+
+  // const user_id = req.cookies["user_id"];
+  // if (user_id) {
+  //   const user = getUserByid(user_id);
+  //   const templateVars = {
+  //     user: user,
+  //   };
+  //   res.render("urls_new", templateVars);
+  // } else {
+  //   res.redirect("/login");
+  // }
 });
 
 // create and updates urlDatabase with new url then redirects to urls list page
