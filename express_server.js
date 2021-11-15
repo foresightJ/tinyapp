@@ -153,7 +153,7 @@ app.post("/login", (req, res) => {
       res.cookie("user_id", `${user.id}`);
       res.redirect("/urls");
     } else {
-      res.sendStatus(402);
+      res.sendStatus(403);
     }
     //redirect the user to the homepage
   }
