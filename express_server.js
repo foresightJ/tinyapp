@@ -67,10 +67,9 @@ const getUserByid = (id) => {
 };
 // displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
-  // edit?
-  const userId = req.cookies["user_id"];
-  const templateVars = { urls: urlDatabase, user: users[userId] };
-  console.log("templateVars.user", templateVars.user);
+  const user = getUserByid(req.cookies["user_id"]);
+  // console.log(user);
+  const templateVars = { urls: urlDatabase, user: user };
   res.render("urls_index", templateVars);
 });
 
@@ -135,8 +134,16 @@ app.get("/u/:shortURL", (req, res) => {
 // deletes specifiesd entry from urlDatabase and redirects to urls page
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  if (urlDatabase[shortURL].userID === req.body.userId) {
+    delete urlDatabase[shortURL];
+    res.redirect(`/urls`);
+  } else {
+    res.sendStatus(403);
+  }
+
+  // const shortURL = req.params.shortURL;
+  // delete urlDatabase[shortURL];
+  // res.redirect("/urls");
 });
 
 // displays form to update a specified data(url) in urlDatabase
