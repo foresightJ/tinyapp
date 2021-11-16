@@ -4,9 +4,11 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["screenshot description"](#)
+!["Short URL and their corresponding long URL show page"](https://github.com/foresightJ/tinyapp/blob/master/docs/urls_page.png)
 
-!["screenshot description"](#)
+!["Create a new short URL page"](https://github.com/foresightJ/tinyapp/blob/master/docs/create_url_page.png)
+
+!["Secure login Page"](https://github.com/foresightJ/tinyapp/blob/master/docs/login_prompt.png)
 
 ## Dependencies
 
