@@ -91,12 +91,13 @@ app.get("/urls/new", (req, res) => {
 // create and updates urlDatabase with new url then redirects to urls list page
 app.post("/urls", (req, res) => {
   // form data
-  const longURL = req.body.longURL;
+  const { longURL, userId } = req.body;
   const shortURL = generateRandomString();
-
-  urlDatabase[shortURL].shortURL = longURL;
-
-  // res.redirect("/urls");
+  newUrl = {
+    longURL: longURL,
+    userID: userId,
+  };
+  urlDatabase[shortURL] = newUrl;
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -118,10 +119,17 @@ app.get("/urls/:shortURL", (req, res) => {
 // A redirect to the corresponding longURL
 
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  // const longURL = ...
-  const longURL = urlDatabase[shortURL]["longURL"];
-  res.redirect([longURL]);
+  if (!getUserByid(req.cookies["user_id"])) {
+    res.send("Please log in first");
+  } else {
+    const user = getUserByid(req.cookies["user_id"]);
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL],
+      user: user,
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 // deletes specifiesd entry from urlDatabase and redirects to urls page
@@ -146,8 +154,18 @@ app.get("urls/:shortURL", (req, res) => {
 
 // updates urlDatabse with new value for its key(shortURL)
 app.post("/urls/:shortURL/edit", (req, res) => {
+  if (!getUserByid(req.cookies["user_id"])) {
+    res.redirect("/login");
+  } else {
+    const user = getUserByid(req.cookies["user_id"]);
+    const templateVars = {
+      user: user,
+    };
+    res.render("urls_new", templateVars);
+  }
+
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL]["longURL"] = req.body.editlongURL;
+  urlDatabase[shortURL][longURL] = req.body.editlongURL;
 
   res.redirect("/urls");
 });
