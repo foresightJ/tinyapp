@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
@@ -42,7 +43,7 @@ const users = {
 // helper function to check if email already exits in urlDatabase;
 const checkEmail = (email) => {
   for (let user in users) {
-    if (users[user].email === email) {
+    if (users[user].email.toLowerCase() === email.toLowerCase()) {
       return `${true}`;
     }
   }
@@ -51,7 +52,7 @@ const checkEmail = (email) => {
 // helper function to return user object if it exist;
 const findUserEmail = (email) => {
   for (let user in users) {
-    if (users[user].email === email) {
+    if (users[user].email.toLowerCase() === email.toLowerCase()) {
       return users[user];
     }
   }
@@ -102,17 +103,17 @@ app.post("/urls", (req, res) => {
 
 // displays specified url from urlDatabase
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]["longURL"],
-
-    // longURL: urlDatabase[shortURL],
-    user: users[userId],
-    // edit: false
-  };
-  // console.log(templateVars.longURL);
-  res.render("urls_show", templateVars);
+  if (!getUserByid(req.cookies["user_id"])) {
+    res.send("Please log in first");
+  } else {
+    const user = getUserByid(req.cookies["user_id"]);
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL],
+      user: user,
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 // A redirect to the corresponding longURL
@@ -140,10 +141,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   } else {
     res.sendStatus(403);
   }
-
-  // const shortURL = req.params.shortURL;
-  // delete urlDatabase[shortURL];
-  // res.redirect("/urls");
 });
 
 // displays form to update a specified data(url) in urlDatabase
@@ -161,20 +158,13 @@ app.get("urls/:shortURL", (req, res) => {
 
 // updates urlDatabse with new value for its key(shortURL)
 app.post("/urls/:shortURL/edit", (req, res) => {
-  if (!getUserByid(req.cookies["user_id"])) {
-    res.redirect("/login");
-  } else {
-    const user = getUserByid(req.cookies["user_id"]);
-    const templateVars = {
-      user: user,
-    };
-    res.render("urls_new", templateVars);
-  }
-
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL][longURL] = req.body.editlongURL;
-
-  res.redirect("/urls");
+  if (urlDatabase[shortURL].userID === req.body.userId) {
+    urlDatabase[shortURL].longURL = req.body.editlongURL;
+    res.redirect("/urls");
+  } else {
+    res.sendStatus(403);
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -191,7 +181,7 @@ app.post("/login", (req, res) => {
     //if it exist get the user and set cookies to the user id
     const user = findUserEmail(email);
 
-    if (password === user.password) {
+    if (bcrypt.compareSync(password, user.password)) {
       res.cookie("user_id", `${user.id}`);
       res.redirect("/urls");
     } else {
@@ -221,10 +211,12 @@ app.post("/register", (req, res) => {
   if (email === "" || password === "" || checkEmail(email)) {
     res.sendStatus(403);
   } else {
+    // found in the req.params object
+    const hashedPassword = bcrypt.hashSync(password, 10);
     const user = {
       id: user_id,
       email: email,
-      password: password,
+      password: hashedPassword,
     };
     // Defines User
     users[user_id] = user;
