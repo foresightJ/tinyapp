@@ -130,12 +130,9 @@ app.get("/u/:shortURL", (req, res) => {
     res.send("Please log in first");
   } else {
     const user = getUserByid(req.session.user_id);
-    const templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL],
-      user: user,
-    };
-    res.render("urls_show", templateVars);
+    const shortURL = req.params.shortURL;
+    const longURl = urlDatabase[shortURL].longURL;
+    res.redirect(`${longURl}`);
   }
 });
 
