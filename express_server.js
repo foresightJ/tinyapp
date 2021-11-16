@@ -15,8 +15,14 @@ function generateRandomString() {
 
 // Reference database with our longURLs
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 // Our users database Object
@@ -61,9 +67,10 @@ const getUserByid = (id) => {
 };
 // displays index list page of urlDatabase
 app.get("/urls", (req, res) => {
+  // edit?
   const userId = req.cookies["user_id"];
   const templateVars = { urls: urlDatabase, user: users[userId] };
-  console.log(templateVars.user);
+  console.log("templateVars.user", templateVars.user);
   res.render("urls_index", templateVars);
 });
 
@@ -79,17 +86,6 @@ app.get("/urls/new", (req, res) => {
     };
     res.render("urls_new", templateVars);
   }
-
-  // const user_id = req.cookies["user_id"];
-  // if (user_id) {
-  //   const user = getUserByid(user_id);
-  //   const templateVars = {
-  //     user: user,
-  //   };
-  //   res.render("urls_new", templateVars);
-  // } else {
-  //   res.redirect("/login");
-  // }
 });
 
 // create and updates urlDatabase with new url then redirects to urls list page
@@ -98,7 +94,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL].shortURL = longURL;
 
   // res.redirect("/urls");
   res.redirect(`/urls/${shortURL}`);
@@ -109,20 +105,23 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL]["longURL"],
+
+    // longURL: urlDatabase[shortURL],
     user: users[userId],
     // edit: false
   };
+  // console.log(templateVars.longURL);
   res.render("urls_show", templateVars);
 });
 
-// A redirect to the corresponding longURL OR
-// keyed short url re-directs to the web address contained in its value
+// A redirect to the corresponding longURL
+
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   // const longURL = ...
-  const longURL = urlDatabase[shortURL];
-  res.redirect(longURL);
+  const longURL = urlDatabase[shortURL]["longURL"];
+  res.redirect([longURL]);
 });
 
 // deletes specifiesd entry from urlDatabase and redirects to urls page
@@ -133,11 +132,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 // displays form to update a specified data(url) in urlDatabase
-app.get("urls/:shortURL/edit", (req, res) => {
-  // const shortURL = req.params.shortURL;
+app.get("urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
   const userId = req.cookies["user_id"];
   const templateVars = {
     user: users[userId],
+    shortURL: shortURL,
+    longURL: urlDatabase[shortURL]["longURL"],
   };
 
   res.render("urls_show", templateVars);
@@ -146,21 +147,13 @@ app.get("urls/:shortURL/edit", (req, res) => {
 // updates urlDatabse with new value for its key(shortURL)
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.editlongURL;
+  urlDatabase[shortURL]["longURL"] = req.body.editlongURL;
 
   res.redirect("/urls");
 });
 
-// app.get("/login", (req, res) => {
-//   res.render("_header");
-// });
-
-// update maybe needed on login POST route
-// app.post("/login", (req, res) => {
-//   res.redirect("/urls");
-// });
-
 app.get("/login", (req, res) => {
+  // check for login
   res.render("login_page");
 });
 
@@ -172,7 +165,6 @@ app.post("/login", (req, res) => {
   } else {
     //if it exist get the user and set cookies to the user id
     const user = findUserEmail(email);
-    // console.log(user);
 
     if (password === user.password) {
       res.cookie("user_id", `${user.id}`);
@@ -180,9 +172,7 @@ app.post("/login", (req, res) => {
     } else {
       res.sendStatus(403);
     }
-    //redirect the user to the homepage
   }
-  // console.log(users);
 });
 
 // logs out registered user
@@ -216,21 +206,6 @@ app.post("/register", (req, res) => {
     res.cookie("user_id", `${user.id}`);
     // console.log("cookie:", `${user.id}`);
   }
-
-  console.log("users:", users);
-  // adds newUser to database
-  // sets cookie on user_id
-  // console.log("user", user);
-  // console.log("user.id", user.id);
-  // console.log("users:", users);
-  // console.log("cookie:", `${user.id}`);
-  // console.log(req.body);
-  // console.log(req.body.password);
-  // console.log(req.body.email);
-
-  // generate random alpha-numeric to store user id
-  // eventually collect generated userid and set cookie with its value
-  // push userId to database;
 
   res.redirect("/urls");
 });
