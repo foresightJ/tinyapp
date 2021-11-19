@@ -13,9 +13,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 
  
-<img src="./docs/createUrl.png?raw=true" width= "550px" height="350px" alt="tweeter Desktop View"> &nbsp; &nbsp; 
-<img src="./docs/myUrls.png?raw=true" width= "550px" height="700px" alt="tweeter mobile view">
-<img src="./docs/updateUrl.png?raw=true" width= "550px" height="700px" alt="tweeter mobile view">
+<img src="./docs/createUrl.png?raw=true" width= "500px" height="145px" alt="tweeter Desktop View"> &nbsp; &nbsp; 
+<img src="./docs/myUrls.png?raw=true" width= "500px" height="700px" alt="tweeter mobile view">
+<img src="./docs/updateUrl.png?raw=true" width= "500px" height="700px" alt="tweeter mobile view">
 
 
 
