@@ -152,7 +152,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // displays form to update a specified data(url) in urlDatabase
 app.get("urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  // const userId = req.session.user_id;
   const userId = req.session.user_id;
   const templateVars = {
     user: users[userId],
@@ -193,7 +192,6 @@ app.post("/login", (req, res) => {
     const user = findUserEmail(email);
 
     if (bcrypt.compareSync(password, user.password)) {
-      // res.cookie("user_id", `${user.id}`);
       req.session.user_id = user.id;
       res.redirect("/urls");
     } else {
